@@ -9,14 +9,14 @@
   "deviceType" : "apple-ipad-pro-space-gray",
   "sharedPrototype" : 0,
   "propertyPanelToggleStates" : {
-
+    "Filters" : false
   },
   "projectId" : "BF11AC85-E000-448C-A465-6E48A3914826",
   "deviceOrientation" : 0,
   "selectedHand" : "",
   "showBezel" : 0,
   "foldedCodeRanges" : [
-    "{272, 1109}"
+    "{275, 1350}"
   ],
   "deviceScale" : "fit"
 }
