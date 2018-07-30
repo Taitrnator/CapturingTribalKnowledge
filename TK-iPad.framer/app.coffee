@@ -1,4 +1,5 @@
 {Symbol} = require "symbols/Symbol"
+{Pointer} = require "Pointer"
 
 #scroll component
 scroll = new ScrollComponent
@@ -45,7 +46,9 @@ class Operation extends Layer
 	ToggleExpand: => 
 		range = @.options.expandTemplate.height + 50
 		distance = if @.options.expanded is false then range else -range
-		@.height = @.height + distance
+		@.animate 
+			time: 0.25
+			height: @.height + distance
 		#recalc sib height
 		for sib in @.siblings
 			if sib.y > @.y
@@ -82,6 +85,7 @@ for i in Ops
 # 	
 # pageComp.snapToPage(Q1)
 
+
 tipComp = PageComponent.wrap(SidebarParent)
 tipComp.scrollVertical = true
 tipComp.scrollHorizontal = false
@@ -97,8 +101,14 @@ for i in tips
 	tipComp.addPage(i)
 
 tipComp.snapToPage(tip_pathfinder)
-
-Pintle_Hook_1.onTap (evt) ->
+	
+Pintle_Hook_1.onTap (evt, layer) ->
+	yval = Pointer.screen(evt, layer).y
+	indicator.animate
+		time: 0.25
+		y: yval
+	
+	print(indicator.y)
 	tipComp.snapToPage(tip_technician)
 
 Info.onTap ->
