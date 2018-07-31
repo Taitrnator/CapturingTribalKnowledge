@@ -138,10 +138,8 @@ class Tip extends Layer
 		@options.content ?= content_resistance
 		@options.history ?= tip_history1
 		_.defaults @options,
-			parent: SidebarParent_1
+			opacity: 0
 			backgroundColor: "transparent"
-			x: Align.left
-			y: Align.top
 		super @options
 		
 		@options.reference.props = 
@@ -173,8 +171,6 @@ class Tip extends Layer
 			x: Align.left(15)
 			y: @options.reference.height + @options.topbar.height + @options.content.height + @options.bottombar.height + 45
 
-tipComp = new PageComponent
-	
 tips = [
 		{
 		reference: reference_pintlehook,
@@ -189,29 +185,49 @@ tips = [
 		bottombar: tip_bar
 		}]
 
+tipList = []
+findTip = (tipname) ->
+	for i in tipList
+		if i.name == tipname
+			return i
 
-for i in tips
+displayTip = (tipname) ->
+# 	for item in SidebarParent.children
+# 		SidebarParent.removeChild(item)
+	
+	print("finding #{tipname}")
+	active = findTip(tipname).content
+	active.props =
+		parent: SidebarParent
+		x: Align.left
+		y: Align.top
+		opacity: 1
+
+for obj, i in tips
 	tip = new Tip
-		reference: i.reference
-		content: i.content
-		bottombar: i.bottombar
-		history: i.history
+		reference: obj.reference
+		content: obj.content
+		bottombar: obj.bottombar
+		history: obj.history
 		
 	button = new Marker
-		parent: i.bottombar
+		parent: obj.bottombar
 		x: Align.left(-20)
 		y: Align.top
 		
+	item  = { name: "tip_#{i}", content: tip }
+	tipList.push(item)
+	print(tipList)
+	
+displayTip("tip_0")
 
 Pintle_Hook_1.onTap (evt, layer) ->
 	yval = Pointer.screen(evt, layer).y
 	indicator.animate
 		time: 0.25
 		y: yval
-	
-	tipComp.snapToPage(tip_technician)
+		
+	displayTip("tip_1")
 
-Info.onTap ->
-	tipComp.snapToPage(tip_pathfinder)
 
 
