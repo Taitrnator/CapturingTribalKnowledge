@@ -7,18 +7,19 @@
   "fullScreen" : false,
   "cachedDeviceWidth" : 1024,
   "deviceType" : "apple-ipad-pro-space-gray",
-  "sharedPrototype" : 0,
+  "sharedPrototype" : true,
   "propertyPanelToggleStates" : {
     "Filters" : false
   },
   "projectId" : "BF11AC85-E000-448C-A465-6E48A3914826",
   "deviceOrientation" : 0,
   "selectedHand" : "",
-  "showBezel" : 0,
+  "showBezel" : false,
   "foldedCodeRanges" : [
-    "{292, 1589}",
-    "{2132, 892}",
-    "{3025, 2219}"
+    "{412, 1742}",
+    "{2405, 906}",
+    "{3312, 2942}",
+    "{6255, 817}"
   ],
   "deviceScale" : "fit"
 }
