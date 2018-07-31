@@ -1,23 +1,23 @@
 {Symbol} = require "symbols/Symbol"
 {Pointer} = require "Pointer"
 
+flow = new FlowComponent()
+flow.showNext(Test_List_View)
+
 #scroll component
 scroll = new ScrollComponent
 	wrap: ScrollParent
-	width: ScrollParent.width
-	height: ScrollParent.height
+	y: 400
 	scrollHorizontal: false
 	scrollVertical: true
 	backgroundColor: "transparent"
-	x: Align.center
-	y: Align.center
-
+	clip: true
 
 #Operations
 class Operation extends Layer
 	constructor: (@options={}) ->
-		@options.collapseTemplate ?= op_collapsed
-		@options.expandTemplate ?= Op70Content
+		@options.collapseTemplate ?= Operation001_collapsed
+		@options.expandTemplate ?= Op30_content
 		@options.y ?= 50 
 		@.options.expanded ?= false
 		_.defaults @options,
@@ -25,7 +25,7 @@ class Operation extends Layer
 			parent: scroll
 			backgroundColor: "transparent"
 			height: 50
-			width: scroll.width
+			width: ScrollParent.width
 			y: @options.y
 			clip: true
 		super @options
@@ -60,9 +60,16 @@ class Operation extends Layer
 # 		@.height = @.height + @.options.expandTemplate.height
 # 		print(@.height)
 				
-Ops = [{collapse: Operation30_collapsed, expand: Op30_content}, {collapse: Operation40_collapsed, expand: Op40_content}, {collapse: Operation50_collapsed, expand: Op50_content}]
-
-y = 0
+Ops = [
+		{collapse: Operation001_collapsed, expand: Op30_content}, 
+		{collapse: Operation009_collapsed, expand: Op30_content}, 
+		{collapse: Operation20_collapsed, expand: Op30_content}, 
+		{collapse: Operation30_collapsed, expand: Op30_content}, 
+		{collapse: Operation40_collapsed, expand: Op40_content}, 
+		{collapse: Operation50_collapsed, expand: Op50_content}
+		]
+		
+y = 50
 
 for i in Ops
 	Op = new Operation
@@ -85,31 +92,126 @@ for i in Ops
 # 	
 # pageComp.snapToPage(Q1)
 
+#Marker Button
+class Marker extends Layer 
+	constructor: (@options={}) ->
+		@options.defaultButton ?= marking_default
+		@options.activeButton ?= marking_active
+		@options.marked ?= false
+		_.defaults @options,
+			backgroundColor: "transparent"
+			height: 36
+			clip: true
+		super @options
+		
+		@options.defaultButton.props = 
+			parent: @
+			animationOptions: {time: 0.5, curve: Spring}
+			x: Align.center
+			y: Align.center
+			
+		@options.activeButton.props = 
+			parent: @
+			animationOptions: {time: 0.5, curve: Spring}
+			x: Align.center
+			y: Align.center(36)
+		
+		@options.activeButton.onTap @ToggleButton
+		@options.defaultButton.onTap @ToggleButton
+	
+	ToggleButton: =>
+		A = B = 0
+		if @options.marked is false then A = -36 else B = 36
+		@options.defaultButton.animate
+			y: Align.center(A)
+		@options.activeButton.animate
+			y: Align.center(B)
+		@options.marked = !@options.marked	
 
-tipComp = PageComponent.wrap(SidebarParent)
-tipComp.scrollVertical = true
-tipComp.scrollHorizontal = false
 
-tips = [tip_pathfinder, tip_technician, tip_technician_2, tip_manual, tip_lessonslearned]
+#Tip
+class Tip extends Layer 
+	constructor: (@options={}) ->
+		@options.reference ?= reference_pintlehook
+		@options.topbar ?= tip_topbar
+		@options.bottombar ?= tip_bar
+		@options.content ?= content_resistance
+		@options.history ?= tip_history1
+		_.defaults @options,
+			parent: SidebarParent_1
+			backgroundColor: "transparent"
+			x: Align.left
+			y: Align.top
+		super @options
+		
+		@options.reference.props = 
+			parent: @
+			x: Align.left
+			y: Align.top
+			
+		@options.topbar.props = 
+			parent: @
+			animationOptions: {time: 0.5, curve: Spring}
+			x: Align.left
+			y: @options.reference.height
+		
+		@options.content.props =
+			parent: @
+			animationOptions: {time: 0.5, curve: Spring}
+			x: Align.left(15)
+			y: @options.reference.height + @options.topbar.height
+			
+		@options.bottombar.props =
+			parent: @
+			animationOptions: {time: 0.5, curve: Spring}
+			x: Align.left(15)
+			y: @options.reference.height + @options.topbar.height + @options.content.height + 30
+		
+		@options.history.props = 
+			parent: @
+			animationOptions: {time: 0.5, curve: Spring}
+			x: Align.left(15)
+			y: @options.reference.height + @options.topbar.height + @options.content.height + @options.bottombar.height + 45
+
+tipComp = new PageComponent
+	
+tips = [
+		{
+		reference: reference_pintlehook,
+		content: content_resistance,
+		history: tip_history1
+		bottombar: tip_bar
+		},
+		{
+		reference: reference_pathfinder,
+		content: content_pathfinder,
+		history: history_pathfinder
+		bottombar: tip_bar
+		}]
+
 
 for i in tips
-# 	mkr = new Marker
-# 		parent: i
-# 		x: Align.left(5)
-# 		y: Align.top(8)
-# 	
-	tipComp.addPage(i)
+	tip = new Tip
+		reference: i.reference
+		content: i.content
+		bottombar: i.bottombar
+		history: i.history
+		
+	button = new Marker
+		parent: i.bottombar
+		x: Align.left(-20)
+		y: Align.top
+		
 
-tipComp.snapToPage(tip_pathfinder)
-	
 Pintle_Hook_1.onTap (evt, layer) ->
 	yval = Pointer.screen(evt, layer).y
 	indicator.animate
 		time: 0.25
 		y: yval
 	
-	print(indicator.y)
 	tipComp.snapToPage(tip_technician)
 
 Info.onTap ->
 	tipComp.snapToPage(tip_pathfinder)
+
+
