@@ -18,6 +18,9 @@ scroll = new ScrollComponent
 	
 scroll.content.backgroundColor = "transparent"
 
+recalculateScrollHeight = (h) ->
+	print('foo')
+	
 #Operations
 class Operation extends Layer
 	constructor: (@options={}) ->
@@ -96,18 +99,6 @@ for i in Ops
 	y = y + 50
 		
 	
-	
-# pageComp = PageComponent.wrap(Questions)
-# pageComp.scrollVertical = false
-# pageComp.scrollHorizontal = false
-# 
-# pages = [Q1, Q2, Q3, Q4, Q5, Closeout_Done]
-# 
-# for i in pages 
-# 	pageComp.addPage(i, "bottom")
-# 	
-# pageComp.snapToPage(Q1)
-
 #Marker Button
 class Marker extends Layer 
 	constructor: (@options={}) ->
@@ -145,6 +136,49 @@ class Marker extends Layer
 		@options.marked = !@options.marked	
 
 
+#Marker Button
+#Poll Button
+class Button extends Layer 
+	constructor: (@options={}) ->
+		@options.marked ?= false
+		@options.backgroundColor ?= "#000"
+		@options.height = 44
+		@label = new TextLayer 
+			fontSize: 18
+		
+		super @options
+		
+		@label.parent = @
+		@label.text = "Yes"
+		@label.center()
+		
+# 		@options.activeButton.onTap @ToggleButton
+# 		@options.defaultButton.onTap @ToggleButton
+# 	
+# 	ToggleButton: =>
+# 		A = B = 0
+# 		if @options.marked is false then A = 1 else B = 1
+# 		@options.defaultButton.animate
+# 			opacity: A
+# 		@options.activeButton.animate
+# 			opacity: B
+# 		@options.marked = !@options.marked
+		
+
+yes1 = new Button
+	parent: scroll
+	x: Align.center
+	y: Align.bottom	
+
+yes1.label.text = "Yes"
+
+no1 = new Button
+	parent: scroll
+	x: Align.left
+	y: Align.bottom
+
+no1.label.text = "No"
+
 #Tip
 class Tip extends Layer 
 	constructor: (@options={}) ->
@@ -158,53 +192,45 @@ class Tip extends Layer
 			opacity: 0
 			backgroundColor: "transparent"
 		super @options
-		
-		@options.reference.props = 
-			parent: @
-			x: Align.left
-			y: Align.top
 			
 		@options.topbar.props = 
 			parent: @
 			animationOptions: {time: 0.5, curve: Spring}
 			x: Align.left
-			y: @options.reference.height
+			y: Align.top
 		
 		@options.content.props =
 			parent: @
 			animationOptions: {time: 0.5, curve: Spring}
 			x: Align.left(15)
-			y: @options.reference.height + @options.topbar.height
+			y: @options.topbar.height
 			
 		@options.bottombar.props =
 			parent: @
 			animationOptions: {time: 0.5, curve: Spring}
 			x: Align.left(15)
-			y: @options.reference.height + @options.topbar.height + @options.content.height + 30
+			y: @options.topbar.height + @options.content.height + 30
 		
 		@options.history.props = 
 			parent: @
 			animationOptions: {time: 0.5, curve: Spring}
 			x: Align.left(15)
-			y: @options.reference.height + @options.topbar.height + @options.content.height + @options.bottombar.height + 45
+			y: @options.topbar.height + @options.content.height + @options.bottombar.height + 45
 
 tips = [
 		{
-		reference: reference_pathfinder,
-		topbar: tip_topbar.copy(),
+		topbar: tip_lisa.copy(),
 		content: content_pathfinder.copy(),
-		history: history_pathfinder.copy(),
-		bottombar: tip_bar.copy()
+		history: history_empty.copy(),
+		bottombar: tip_bar_empty.copy()
 		},
 		{
-		reference: reference_pintlehook.copy(),
 		topbar: tip_topbar.copy(),
-		content: content_resistance.copy(),
+		content: content_pintlehook.copy(),
 		history: tip_history1.copy(),
 		bottombar: tip_bar.copy()
 		}
 		{
-		reference: reference_airhoses,
 		topbar: tip_topbar.copy(),
 		content: content_airhoses.copy(),
 		history: history_airhoses.copy(),
@@ -231,7 +257,6 @@ displayTip = (tipname) ->
 
 for obj, i in tips
 	tip = new Tip
-		reference: obj.reference
 		topbar: obj.topbar
 		content: obj.content
 		bottombar: obj.bottombar
@@ -261,14 +286,11 @@ tipList.push(profileitem)
 # Tip Interactions
 displayTip("tip_0")
 
-Info.onTap ->
-	displayTip("tip_0")
+for i in [Info, Info_1, Info_2]
+	i.onTap ->
+		displayTip("tip_0")
 	
 Pintle_Hook_1.onTap (evt, layer) ->
-	yval = Pointer.screen(evt, layer).y
-	indicator.animate
-		time: 0.25
-		y: yval
 	displayTip("tip_1")
 
 Air_Hoses.onTap ->
@@ -282,7 +304,7 @@ CloseWAD = () ->
 		scroll.destroy()
 		flow.showNext(Closeout_View)
 		pageComp = PageComponent.wrap(CloseoutContainer)
-		pageComp.scrollVertical = false
+		pageComp.scrollVertical = true
 		pageComp.scrollHorizontal = false
 
 		pages = [Q1, Q2, Q3, Q4, Q5, Closeout_Done]
@@ -295,10 +317,10 @@ CloseWAD = () ->
 		#Flows
 		answers = [Yes1, Yes2, Yes3, No1, No2, No3, A1, B1, C1, D1, A2, B2, C2, D2, E2]
 
-		for i in [Yes1, No1]
-			i.onTap ->
-				pageComp.snapToPage(Q2)
-		
+# 		for i in [Yes1, No1]
+# 			i.onTap ->
+# 				pageComp.snapToPage(Q2)
+# 		
 		for i in [A1, B1, C1, D1]
 			i.onTap ->
 				pageComp.snapToPage(Q3)
@@ -319,7 +341,7 @@ CloseWAD = () ->
 # 			MainView()
 
 
-CloseOut.onTap ->
+Closeout.onTap ->
 	CloseWAD()
 	
 
